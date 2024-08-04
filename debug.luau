@@ -9,7 +9,12 @@ debug_lib.getconstant = function(options)
 end
 
 debug_lib.getconstants = function(options)
-    
+    debug_lib.getconstant = function(options)
+    if type(options) == "string" then
+        if #options == 30 then
+            return options
+        end
+    end
 end
 
 
@@ -39,7 +44,11 @@ debug_lib.getstack = function(options)
 end
 
 debug_lib.setstack = function(options)
-
+if type(level) ~= "number" or level < 0 then
+        error("arg #1 must be a non-negative number")
+    end
+    if type(frame) ~= "table" then
+        error("arg #2 must be a table")
 end
 
 debug_lib.setupvalue = function(options)
