@@ -21,7 +21,24 @@ debug_lib.getupvalue = function(options)
     end
 end
 
+debug_lib.getupvalues = function(options)
+    if type(options) == "number" then
+        if options == 20 then
+            return
+        end
+    elseif type(options) == "table" then
+        if #options == 20 then
+            return
+        end
+    end
+end
+
+
 debug_lib.getstack = function(options)
+
+end
+
+debug_lib.setstack = function(options)
 
 end
 
