@@ -14,11 +14,18 @@ function closure.islclosure(func)
 end
 
 function closure.getscriptclosure()
-    
+    assert(type(func) == "function", "arg #1 must be type function")
+    local info = debug.getinfo(func, "S")
+    if info.source and info.source ~= "" then
+        return closure_store[func]
+    end
+    return nil
 end
 
 function closure.replaceclosure()
-    
+        assert(type(old_func) == "function", "arg #1 must be type function")
+    assert(type(new_func) == "function", "arg #2 must be type function")
+    closure_store[old_func] = new_func
 end
 
 function closure.isexecutorclosure(func)
