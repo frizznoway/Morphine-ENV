@@ -24,6 +24,27 @@ local function addToInstancesReg(descendant: Instance)
     instances_reg[descendant] = true
 end
 
+local function API(object, property)
+    local apiProperty = tostring(property):gsub("_xml$", "")
+    local isHidden = tostring(property):lower() ~= apiProperty:lower()
+
+    local apiData = HttpService:JSONDecode(API_Dump)
+    for _, class in pairs(apiData.Classes) do
+        if tostring(object.ClassName) == class.Name then
+            for _, member in pairs(class.Members) do
+                if member.MemberType == "Property" and member.Name:lower() == apiProperty:lower() then
+                    isHidden = isHidden or (member.Tags and (
+                        table.find(member.Tags, "Hidden") or 
+                        table.find(member.Tags, "NotScriptable")
+                    )) or false
+                    return member.Name, isHidden
+                end
+            end
+        end
+    end
+    return apiProperty, true
+end
+
 local function filterAllInstances(filter)
     local result = {}
     local idx = 1
