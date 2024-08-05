@@ -290,11 +290,51 @@ function instance_lib.gethiddenproperties(instance)
     return hidden_properties
 end
 
-function instance_lib.gethiddenproperty(instance, property_name)
+function instance_lib.gethiddenproperty(object, property)
+local apiProperty, isHidden = API(object, property)
+    
+    local methods = {
+        function() return object[apiProperty] end,
+        function() return object:GetAttribute(apiProperty) end,
+        function() 
+            local mt = getrawmetatable(object)
+            if mt and mt.__index then
+                return mt.__index(object, apiProperty)
+            end
+        end
+    }
+    
+    for _, method in ipairs(methods) do
+        local success, result = pcall(method)
+        if success and result ~= nil then
+            return result, isHidden
+        end
+    end
+    
+    return nil, isHidden
 end
 
-function instance_lib.sethiddenproperty(instance, property_name)
-
+function instance_lib.sethiddenproperty(object, property, value)
+local apiProperty, _ = API(object, property)
+    
+    local methods = {
+        function() object[apiProperty] = value; return true end,
+        function() object:SetAttribute(apiProperty, value); return true end,
+        function()
+            local mt = getrawmetatable(object)
+            if mt and mt.__newindex then
+                mt.__newindex(object, apiProperty, value)
+                return true
+            end
+        end
+    }
+    
+    for _, method in ipairs(methods) do
+        local success = pcall(method)
+        if success then return true end
+    end
+    
+    return false
 end
 
 
