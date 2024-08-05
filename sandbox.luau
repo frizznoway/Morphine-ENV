@@ -213,16 +213,16 @@ function sandbox:initialize()
 	end
 
     environment.roblox.loadstring = function(source, chunk_name)
-        assert(type(source) == "string", "arg #1 must be type string")
-        local current_script = utils.fetch_stubmodule():Clone()
-        current_script.Name = chunk_name or "Morphine"
+    assert(type(source) == "string", "arg #1 must be type string")
+    local current_script = utils.fetch_stubmodule():Clone()
+    current_script.Name = chunk_name or "Morphine"
+    local set_success, compile_err = bridge:send("load_source", current_script, source)
+    if not set_success then
+        return nil, compile_err
+    end
+    return current_script
+end
 
-        local set_success, compile_err = bridge:send("load_source", current_script, source)
-
-        if not set_success then
-            -- TODO: make this return compiler error if compilation didn't succeed
-            return nil, compile_err
-        end
 
         local success, func = pcall(require, current_script) -- TODO: This still causes "ModuleScript:1: Incomplete statement: expected assignment or a function call"-like errors despite pcall because it's a compiler error inside the ModuleScript, we need to redirect it somehow as stated above
         --task.spawn(bridge.send, bridge, "reset_module_bytecode", current_script)
