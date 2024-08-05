@@ -39,9 +39,20 @@ debug_lib.getupvalues = function(options)
 end
 
 
-debug_lib.getstack = function(options)
 
+
+debug_lib.getstack = function(level)
+    if type(level) ~= "number" or level < 0 then
+        error("arg #1 must be a non-negative number")
+    end
+    local stack_info = debug.getstack(level)
+    if stack_info then
+        return stack_info
+    else
+        return nil
+    end
 end
+
 
 debug_lib.setstack = function(options)
 if type(level) ~= "number" or level < 0 then
